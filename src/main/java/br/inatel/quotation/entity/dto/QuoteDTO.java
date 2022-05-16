@@ -1,9 +1,11 @@
 package br.inatel.quotation.entity.dto;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import br.inatel.quotation.entity.Quote;
@@ -41,7 +43,7 @@ public class QuoteDTO {
 		return map;
 	}
 	public static Map<LocalDate, String> convertAll (List<Quote> quotes) {
-		Map<LocalDate, String> map = new HashMap<>();
+		Map<LocalDate, String> map = new TreeMap<>((q1, q2) -> -q1.compareTo(q2));
 		quotes.stream().map(q -> map.put(q.getDate(), q.getValue())).collect(Collectors.toList());
 		return map;
 	}
