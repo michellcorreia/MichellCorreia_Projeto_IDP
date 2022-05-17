@@ -35,7 +35,7 @@ public class StockController {
 	
 	@PostMapping
 	public ResponseEntity<Stock> insertStock(@RequestBody Stock stock) {
-		if(stock == null || stock.getId().isEmpty()) {
+		if(stock == null || stock.getId().trim().isEmpty()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();  
 		}
 		else if(!stockService.existsById(stock.getId())) {

@@ -1,0 +1,17 @@
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\entity\dto\QuoteDTO.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\controller\QuotationController.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\web\WebClientApi.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\entity\Quotation.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\repository\QuotationRepository.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\web\RegistrationDTO.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\service\StockService.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\config\swagger\SwaggerConfigurations.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\entity\FormQuote.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\repository\QuoteRepository.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\entity\Quote.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\service\QuotationService.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\QuotationManagementApplication.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\controller\SystemController.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\controller\StockController.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\entity\Stock.java
+C:\DEV\ProjetoIDPWorkspace\Quotation-Management\src\main\java\br\inatel\quotation\service\QuoteService.java
