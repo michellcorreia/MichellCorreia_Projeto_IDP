@@ -35,7 +35,10 @@ public class StockController {
 	
 	@PostMapping
 	public ResponseEntity<Stock> insertStock(@RequestBody Stock stock) {
-		if(!stockService.existsById(stock.getId())) {
+		if(stock == null || stock.getId().isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();  
+		}
+		else if(!stockService.existsById(stock.getId())) {
 			stock.setId(stock.getId().trim().toLowerCase());
 			stockService.insertStock(stock);
 			return ResponseEntity.status(HttpStatus.CREATED).body(stock); 

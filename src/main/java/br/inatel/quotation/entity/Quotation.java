@@ -23,7 +23,7 @@ public class Quotation {
 	@Column(unique = true, name = "stock_id", nullable = false)
 	private String stockId;
 	@Transient
-	private Map<LocalDate, String> quotes = new TreeMap<>((q1,q2) -> q1.compareTo(q2));
+	private Map<LocalDate, String> quotes =	new TreeMap<>((q1,q2) -> q1.compareTo(q2));
 	
 	public Quotation() {
 		
