@@ -1,6 +1,7 @@
 package br.inatel.quotation.controller;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,8 +15,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import br.inatel.quotation.entity.FormQuote;
 import br.inatel.quotation.entity.Quotation;
+import br.inatel.quotation.entity.dto.QuotationDTO;
+import br.inatel.quotation.entity.form.FormQuote;
 import br.inatel.quotation.repository.QuotationRepository;
 import br.inatel.quotation.repository.QuoteRepository;
 import br.inatel.quotation.service.QuotationService;
@@ -30,20 +32,24 @@ class QuotationControllerTest {
 	private QuoteRepository quoteRepository;
 	@Mock
 	private StockService stockService;
+	private QuoteService quoteService;
 	private QuotationService quotationService;
 	private QuotationController quotationController;
 	
 	@BeforeEach
 	void beforeEach() {
 		MockitoAnnotations.openMocks(this);
-		quotationService = new QuotationService(quotationRepository, stockService);
+		quoteService = new QuoteService(quoteRepository);
+		quotationService = new QuotationService(quotationRepository, stockService, quoteService);
 		quotationController = new QuotationController(quotationService, new QuoteService(quoteRepository));
 	}
 	
 	@Test
 	void deveriaRetornarTodasAsQuotations() {
+		Mockito.when(quotationRepository.findAll()).thenReturn(Arrays.asList(new Quotation("teste")));
 		quotationController.showAllQuotation();
 		Mockito.verify(quotationRepository).findAll();
+		Mockito.verify(quoteRepository).findByQuotation_stockId(Mockito.any());
 	}
 	
 	@Test
@@ -53,7 +59,7 @@ class QuotationControllerTest {
 		quotation.setId(id);
 		Mockito.when(quotationRepository.findByStockId(quotation.getStockId())).thenReturn(quotation);
 		
-		ResponseEntity<Quotation> re = quotationController.showQuotationByStockId(quotation.getStockId());
+		ResponseEntity<QuotationDTO> re = quotationController.showQuotationByStockId(quotation.getStockId());
 		Assertions.assertEquals(HttpStatus.OK.value(), re.getStatusCodeValue());
 	}
 	
@@ -63,7 +69,7 @@ class QuotationControllerTest {
 		Quotation quotation = new Quotation("teste");
 		quotation.setId(id);
 		
-		ResponseEntity<Quotation> re = quotationController.showQuotationByStockId(quotation.getStockId());
+		ResponseEntity<QuotationDTO> re = quotationController.showQuotationByStockId(quotation.getStockId());
 		Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), re.getStatusCodeValue());
 	}
 	
@@ -77,7 +83,7 @@ class QuotationControllerTest {
 		FormQuote form = new FormQuote(quotation.getStockId(), new HashMap<LocalDate, String>());
 		form.setId(id);
 		
-		ResponseEntity<Quotation> re = quotationController.insertQuotation(form);
+		ResponseEntity<QuotationDTO> re = quotationController.insertQuotation(form);
 		Assertions.assertEquals(HttpStatus.OK.value(), re.getStatusCodeValue());
 	}
 	
@@ -87,7 +93,7 @@ class QuotationControllerTest {
 		FormQuote form = new FormQuote("quotation teste", new HashMap<LocalDate, String>());
 		form.setId(id);
 		Mockito.when(stockService.existsById(Mockito.any())).thenReturn(true);
-		ResponseEntity<Quotation> re = quotationController.insertQuotation(form);
+		ResponseEntity<QuotationDTO> re = quotationController.insertQuotation(form);
 		Assertions.assertEquals(HttpStatus.CREATED.value(), re.getStatusCodeValue());
 	}
 	
@@ -100,7 +106,7 @@ class QuotationControllerTest {
 		FormQuote form = new FormQuote("teste2", new HashMap<LocalDate, String>());
 		form.setId(id);
 		
-		ResponseEntity<Quotation> re = quotationController.insertQuotation(form);
+		ResponseEntity<QuotationDTO> re = quotationController.insertQuotation(form);
 		Assertions.assertEquals(HttpStatus.NOT_FOUND.value(), re.getStatusCodeValue());
 	}
 	

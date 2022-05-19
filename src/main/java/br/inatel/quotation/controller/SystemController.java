@@ -18,12 +18,12 @@ public class SystemController {
 	@PostConstruct
 	public void registerIntoApi(){
 		webClientApi.registerIntoApi();
-		System.out.println("Registered into API!");
+		System.out.println("Registered into stock-manager API!");
 	}
 	
 	@DeleteMapping("/stockcache")
 	@CacheEvict(cacheNames = "listOfStocks")
 	public void CleanCache() {
-		System.out.println("Cache Cleaned!");
+		System.out.println("Cache 'listOfStocks' Cleaned!");
 	}
 }

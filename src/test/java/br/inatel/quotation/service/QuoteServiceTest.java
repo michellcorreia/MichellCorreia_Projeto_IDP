@@ -3,9 +3,7 @@ package br.inatel.quotation.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +12,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import br.inatel.quotation.entity.FormQuote;
 import br.inatel.quotation.entity.Quotation;
 import br.inatel.quotation.entity.Quote;
+import br.inatel.quotation.entity.dto.QuotationDTO;
 import br.inatel.quotation.repository.QuoteRepository;
 
 class QuoteServiceTest {
@@ -57,37 +55,27 @@ class QuoteServiceTest {
 	void deveriarAcharUmQuotePorStockEDate() {
 		LocalDate data = LocalDate.now();
 		String stockId =  "stockId";
-		quoteService.findByStockAndDate(data, stockId);
+		quoteService.findQuoteByStockAndDate(data, stockId);
 		Mockito.verify(quoteRepository).findByStockAndDate(data, stockId);
 	}
 	
 	@Test
 	void deveriarAcharUmaListaDeQuotesPeloStockId() {
 		String stockId =  "stockId";
-		quoteService.findByQuotationStockId(stockId);
+		quoteService.findQuotesByStockId(stockId);
 		Mockito.verify(quoteRepository).findByQuotation_stockId(stockId);
 	}
 	
 	@Test
-	void deveriaAdicionarTodosOsQuotesDentroDaQuotation() {
-		Quotation quotationTeste = new Quotation("Meu Teste");
-		Map<LocalDate, String> quotes = new HashMap<>();
-		FormQuote form = new FormQuote(quotationTeste.getStockId(), quotes);
-		
-		quoteService.createQuotes(form, quotationTeste);
-		Mockito.verify(quoteRepository).findByQuotation_stockId(Mockito.any());
-	}
-	
-	@Test
 	void deveriaCarregarTodasAsQuotesDaQuotation() {
-		Quotation quotationTeste = new Quotation("Meu Teste");
+		QuotationDTO quotationTeste = new QuotationDTO(UUID.randomUUID(), "Meu teste");
 		quoteService.loadQuotesFromDB(quotationTeste);
 		Mockito.verify(quoteRepository).findByQuotation_stockId(Mockito.any());
 	}
 	
 	@Test
 	void deveriaCarregarTodasAsQuotesDaListaDeQuotations() {
-		Quotation quotationTeste = new Quotation("Meu Teste");
+		QuotationDTO quotationTeste = new QuotationDTO(UUID.randomUUID(), "Meu teste");
 		quoteService.loadAllQuotesFromDB(Arrays.asList(quotationTeste));
 		Mockito.verify(quoteRepository).findByQuotation_stockId(Mockito.any());
 	}

@@ -1,7 +1,9 @@
 package br.inatel.quotation.service;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,9 +14,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import br.inatel.quotation.entity.FormQuote;
 import br.inatel.quotation.entity.Quotation;
+import br.inatel.quotation.entity.Quote;
+import br.inatel.quotation.entity.form.FormQuote;
 import br.inatel.quotation.repository.QuotationRepository;
+import br.inatel.quotation.repository.QuoteRepository;
 import br.inatel.quotation.web.WebClientApi;
 
 class QuotationServiceTest {
@@ -25,13 +29,17 @@ class QuotationServiceTest {
 	WebClientApi stockRepository;
 	@Mock
 	StockService stockService;
+	@Mock
+	QuoteRepository quoteRepository;
+	QuoteService quoteService;
 	QuotationService quotationService;
 	
 	
 	@BeforeEach
 	void beforeEach() {
 		MockitoAnnotations.openMocks(this);
-		quotationService = new QuotationService(quotationRepository, stockService);
+		quoteService = new QuoteService(quoteRepository);
+		quotationService = new QuotationService(quotationRepository, stockService, quoteService);
 	}
 	
 	@Test
@@ -53,13 +61,6 @@ class QuotationServiceTest {
 		quotationService.insertQuotation(quotation);
 		Mockito.verify(quotationRepository).save(quotation);
 	}
-	
-	@Test
-	void deveriaRetornarUmaQuotationPorId() {
-		UUID id = UUID.randomUUID();
-		quotationService.findQuotationById(id);
-		Mockito.verify(quotationRepository).findById(id);
-	}
 
 	@Test
 	void deveriaProcurarUmaQuotationPeloSeuIdEPorStockId() {
@@ -75,7 +76,7 @@ class QuotationServiceTest {
 	void deveriaProcurarUmaQuotationPorStockId() {
 		String stockId = "Teste";
 		quotationService.findQuotationByStockId(stockId);
-		Mockito.verify(quotationRepository).findByStockId(stockId);
+		Mockito.verify(quotationRepository).findByStockId(stockId.trim().toLowerCase());
 	}
 	
 	@Test
@@ -143,7 +144,44 @@ class QuotationServiceTest {
 		FormQuote form = new FormQuote("Stock teste", new HashMap<LocalDate, String>());
 		form.setId(UUID.randomUUID());
 		
-		quotationService.generateQuotation(form);
+		quotationService.persistQuotation(form);
 		Mockito.verify(quotationRepository).save(Mockito.any());
+	}
+	
+	@Test
+	void devePersistirOsQuotesECriarUmQuotationDTOPreenchidoComTodosOsQuotes() {
+		Map<LocalDate, String> quotes = new HashMap<>();
+		Quote quote = new Quote(LocalDate.now(), "20", null);
+		quotes.put(quote.getDate(), quote.getValue());
+		FormQuote form = new FormQuote("Stock teste", quotes);
+		Quotation quotation = new Quotation("Test");
+		Mockito.when(quoteRepository.findByQuotation_stockId(Mockito.any())).thenReturn(Arrays.asList(quote));
+		
+		quotationService.persistQuotesAndCreateQuotationDTO(form, quotation);
+		Mockito.verify(quoteRepository).save(Mockito.any());
+		Mockito.verify(quoteRepository).findByQuotation_stockId(Mockito.any());
+	}
+	
+	@Test
+	void deveriaRetornarQueOFormNaoEhValidoPoisOStockIdEstaVazio() {
+		FormQuote form = new FormQuote(" ", new HashMap<LocalDate, String>());
+		form.setId(UUID.randomUUID());
+		boolean valid = quotationService.isFormValid(form);
+		Assertions.assertFalse(valid);
+	}
+	
+	@Test
+	void deveriaRetornarQueOFormNaoEhValidoPoisOQuotationIdEhNull() {
+		FormQuote form = new FormQuote("Stock teste", new HashMap<LocalDate, String>());
+		boolean valid = quotationService.isFormValid(form);
+		Assertions.assertFalse(valid);
+	}
+	
+	@Test
+	void deveriaRetornarQueOFormEhValido() {
+		FormQuote form = new FormQuote("Stock teste", new HashMap<LocalDate, String>());
+		form.setId(UUID.randomUUID());
+		boolean valid = quotationService.isFormValid(form);
+		Assertions.assertTrue(valid);
 	}
 }

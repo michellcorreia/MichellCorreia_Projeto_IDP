@@ -7,10 +7,11 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.inatel.quotation.entity.FormQuote;
 import br.inatel.quotation.entity.Quotation;
 import br.inatel.quotation.entity.Quote;
+import br.inatel.quotation.entity.dto.QuotationDTO;
 import br.inatel.quotation.entity.dto.QuoteDTO;
+import br.inatel.quotation.entity.form.FormQuote;
 import br.inatel.quotation.repository.QuoteRepository;
 
 @Service
@@ -34,17 +35,17 @@ public class QuoteService {
 		return quoteRepository.save(quote);
 	}
 	
-	public Quote findByStockAndDate(LocalDate quoteDate, String stockId) {
+	public Quote findQuoteByStockAndDate(LocalDate quoteDate, String stockId) {
 		return quoteRepository.findByStockAndDate(quoteDate, stockId);
 	}
 	
-	public List<Quote> findByQuotationStockId(String stockId) {
+	public List<Quote> findQuotesByStockId(String stockId) {
 		return quoteRepository.findByQuotation_stockId(stockId);
 	}
 
-	public void createQuotes(FormQuote form, Quotation quotation) {
+	public void persistQuotes(FormQuote form, Quotation quotation) {
 		form.getQuotes().forEach((k,v) -> {
-			Quote quote = findByStockAndDate(k, quotation.getStockId());
+			Quote quote = findQuoteByStockAndDate(k, quotation.getStockId());
 			if(quote != null) {
 				quote.setValue(v);
 				insertQuote(quote);
@@ -53,15 +54,14 @@ public class QuoteService {
 				insertQuote(new Quote(k,v,quotation));
 			}
 		});
-		quotation.setQuotes(QuoteDTO.convertAll(findByQuotationStockId(form.getStockId().trim().toLowerCase())));
 	}
 	
-	public void loadQuotesFromDB(Quotation quotation) {
-		quotation.setQuotes(QuoteDTO.convertAll(findByQuotationStockId(quotation.getStockId())));
+	public void loadQuotesFromDB(QuotationDTO quotation) {
+		quotation.setQuotes(QuoteDTO.convertAll(findQuotesByStockId(quotation.getStockId())));
 	}
 
-	public void loadAllQuotesFromDB(List<Quotation> quotations) {
-		quotations.forEach(q -> q.setQuotes(QuoteDTO.convertAll(findByQuotationStockId(q.getStockId()))));
+	public void loadAllQuotesFromDB(List<QuotationDTO> quotations) {
+		quotations.forEach(q -> q.setQuotes(QuoteDTO.convertAll(findQuotesByStockId(q.getStockId()))));
 	}
 	
 }

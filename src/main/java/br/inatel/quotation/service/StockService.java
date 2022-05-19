@@ -21,6 +21,7 @@ public class StockService {
 	}
 	
 	public Stock insertStock(Stock stock) {
+		stock.setId(stock.getId().trim().toLowerCase());
 		return webClientApi.InsertStockIntoApi(stock);
 	}
 
@@ -29,5 +30,16 @@ public class StockService {
 		Optional<Stock> stock = stocks.stream().filter(s -> s.getId().trim().toLowerCase().equals(stockId.trim().toLowerCase())).findFirst();
 		
 		return stock.isPresent();
+	}
+
+	public boolean isStockValid(Stock stock) {
+		if(stock != null) {
+			if(stock.getId() == null || stock.getId().trim().isEmpty())
+				return false;
+			if(stock.getDescription() == null || stock.getDescription().trim().isEmpty()) 
+				return false;
+			return true;
+		}
+		return false;
 	}
 }

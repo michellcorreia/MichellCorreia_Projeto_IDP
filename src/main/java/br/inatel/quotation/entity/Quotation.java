@@ -1,15 +1,14 @@
 package br.inatel.quotation.entity;
 
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
@@ -22,11 +21,10 @@ public class Quotation {
 	private UUID id;
 	@Column(unique = true, name = "stock_id", nullable = false)
 	private String stockId;
-	@Transient
-	private Map<LocalDate, String> quotes =	new TreeMap<>((q1,q2) -> q1.compareTo(q2));
+	@OneToMany (mappedBy = "quotation", fetch = FetchType.LAZY)
+	private List<Quote> quotes; 
 	
 	public Quotation() {
-		
 	}
 	public Quotation(String stockId) {
 		this.stockId = stockId;
@@ -43,10 +41,11 @@ public class Quotation {
 	public void setStockId(String stockId) {
 		this.stockId = stockId;
 	}
-	public Map<LocalDate, String> getQuotes() {
+	public List<Quote> getQuotes() {
 		return quotes;
 	}
-	public void setQuotes(Map<LocalDate, String> quotes) {
+	public void setQuotes(List<Quote> quotes) {
 		this.quotes = quotes;
 	}
+	
 }

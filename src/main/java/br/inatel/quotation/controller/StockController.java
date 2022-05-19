@@ -29,17 +29,16 @@ public class StockController {
 	@Cacheable(value = "listOfStocks")
 	public ResponseEntity<List<Stock>> showAllStocks() {		
 		List<Stock> stocks = stockService.listAllStocks();
-		System.out.println("Cached!");
+		System.out.println("'listOfStocks' Cached!");
 		return ResponseEntity.status(HttpStatus.OK).body(stocks);
 	}
 	
 	@PostMapping
 	public ResponseEntity<Stock> insertStock(@RequestBody Stock stock) {
-		if(stock == null || stock.getId().trim().isEmpty()) {
+		if(!stockService.isStockValid(stock)) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();  
 		}
 		else if(!stockService.existsById(stock.getId())) {
-			stock.setId(stock.getId().trim().toLowerCase());
 			stockService.insertStock(stock);
 			return ResponseEntity.status(HttpStatus.CREATED).body(stock); 
 		}

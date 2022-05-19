@@ -33,7 +33,7 @@ class StockServiceTest {
 	
 	@Test
 	void deveriaInserirUmStockNoDB() {
-		Stock stock = new Stock();
+		Stock stock = new Stock("Teste", "Descrição teste");
 		stockService.insertStock(stock);
 		Mockito.verify(webClientApi).InsertStockIntoApi(stock);
 	}
@@ -47,5 +47,39 @@ class StockServiceTest {
 		boolean existe = stockService.existsById("Teste");
 		Assertions.assertTrue(existe);
 	}
+	
+	@Test
+	void deveriaRetornarFalsePoisOStockIdEhNull() {
+		Stock stock = new Stock(null, "Descrição teste");
+		boolean valid = stockService.isStockValid(stock);
+		Assertions.assertFalse(valid);
+	}
+	
+	@Test
+	void deveriaRetornarFalsePoisOStockIdEhVazio() {
+		Stock stock = new Stock(" ", "Descrição teste");
+		boolean valid = stockService.isStockValid(stock);
+		Assertions.assertFalse(valid);
+	}
+	
+	@Test
+	void deveriaRetornarFalsePoisADescricaoEhNull() {
+		Stock stock = new Stock("test3", null);
+		boolean valid = stockService.isStockValid(stock);
+		Assertions.assertFalse(valid);
+	}
 
+	@Test
+	void deveriaRetornarFalsePoisADescricaoEhVazia() {
+		Stock stock = new Stock("test3", " ");
+		boolean valid = stockService.isStockValid(stock);
+		Assertions.assertFalse(valid);
+	}
+	
+	@Test
+	void deveriaRetornarTrue() {
+		Stock stock = new Stock("test3", "Descrição teste");
+		boolean valid = stockService.isStockValid(stock);
+		Assertions.assertTrue(valid);
+	}
 }

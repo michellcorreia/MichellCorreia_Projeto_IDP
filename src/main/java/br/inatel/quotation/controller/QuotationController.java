@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.inatel.quotation.entity.FormQuote;
 import br.inatel.quotation.entity.Quotation;
+import br.inatel.quotation.entity.dto.QuotationDTO;
+import br.inatel.quotation.entity.form.FormQuote;
 import br.inatel.quotation.service.QuotationService;
 import br.inatel.quotation.service.QuoteService;
 
@@ -30,37 +31,39 @@ public class QuotationController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Quotation>> showAllQuotation() {
-		List<Quotation> quotes = quotationService.listAllQuotations();
-		quoteService.loadAllQuotesFromDB(quotes);
+	public ResponseEntity<List<QuotationDTO>> showAllQuotation() {
+		List<QuotationDTO> quotations = QuotationDTO.convertAll(quotationService.listAllQuotations());
+		quoteService.loadAllQuotesFromDB(quotations);
 		
-		return ResponseEntity.status(HttpStatus.OK).body(quotes);
+		return ResponseEntity.status(HttpStatus.OK).body(quotations);
 	}
 	
 	@GetMapping("/{stockId}")
-	public ResponseEntity<Quotation> showQuotationByStockId(@PathVariable ("stockId") String stockId) {
-		Quotation quotation = quotationService.findQuotationByStockId(stockId.trim().toLowerCase());
+	public ResponseEntity<QuotationDTO> showQuotationByStockId(@PathVariable ("stockId") String stockId) {
+		Quotation quotation = quotationService.findQuotationByStockId(stockId);
 		if(quotation != null) {
-			quoteService.loadQuotesFromDB(quotation);
-			return ResponseEntity.status(HttpStatus.OK).body(quotation);
+			QuotationDTO quotationdto = QuotationDTO.convert(quotation);
+			quoteService.loadQuotesFromDB(quotationdto);
+			return ResponseEntity.status(HttpStatus.OK).body(quotationdto);
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 	
 	@PostMapping
-	public ResponseEntity<Quotation> insertQuotation(@RequestBody FormQuote form) {
+	public ResponseEntity<QuotationDTO> insertQuotation(@RequestBody FormQuote form) {
+		if(!quotationService.isFormValid(form))
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		
 		Quotation quotation = quotationService.findQuotationByQuotationIdAndStockId(form);
 		if(quotation != null) {
-			quoteService.createQuotes(form, quotation);
-			return ResponseEntity.status(HttpStatus.OK).body(quotation);
+			QuotationDTO quotationDTO = quotationService.persistQuotesAndCreateQuotationDTO(form, quotation);
+			return ResponseEntity.status(HttpStatus.OK).body(quotationDTO);
 		}
 		else if(quotationService.isValidForCreation(form)) {
-			quotation = quotationService.generateQuotation(form);
-			quoteService.createQuotes(form, quotation);
-			
-			return ResponseEntity.status(HttpStatus.CREATED).body(quotation);
+			quotation = quotationService.persistQuotation(form); 
+			QuotationDTO quotationDTO = quotationService.persistQuotesAndCreateQuotationDTO(form, quotation);
+			return ResponseEntity.status(HttpStatus.CREATED).body(quotationDTO);
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
-
 }
