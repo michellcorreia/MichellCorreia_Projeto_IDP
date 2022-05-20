@@ -2,6 +2,11 @@
 Technical Evaluation 1
 
 ### 1.Installation:  
+With the project on maven, select Run As -> Maven Build… then type:  
+“package -DskipTests” on “goal” field  
+  
+The “jar” file need to be located on the “target” folder (default folder) and MUST be named “Quotation-Management-0.0.1-SNAPSHOT.jar”.
+
 Before we put all the applications into containers, we just need to create the image from the project application (quotation-management) with the Dockerfile present on the project root file, to do that, we need point our bash to the application main file (where the Dockerfile is located).
 After that, type the following command:
  
